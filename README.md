@@ -1,8 +1,6 @@
 # Lily The Explorer
 
-<img src="https://img.shields.io/badge/android-app-68a063.svg"/>
-<img src="https://img.shields.io/badge/smart-ads-61dbfb.svg"/>
-<img src="https://img.shields.io/badge/cloud-platform-ff00ff.svg"/>
+<img src="https://img.shields.io/badge/android-app-68a063.svg"/><img src="https://img.shields.io/badge/smart-ads-FBCB02.svg"/><img src="https://img.shields.io/badge/cloud-platform-B12323.svg"/>
 
 <p align="center">
 	Descriptive image here!
