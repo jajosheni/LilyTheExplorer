@@ -29,12 +29,10 @@ import java.util.Arrays;
 public class MainApp extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private SearchView searchView;
-    private ListView categoryListView, resultsListView;
-    private String[] categoryList, resultsList;
-    private ArrayAdapter<String> categoryAdapter, resultsAdapter;
-    private SeekBar seekBar;
+    private String[] categoryList;
+    private ArrayAdapter<String> categoryAdapter;
     private TextView radiusTextView;
+    private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +54,11 @@ public class MainApp extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
+        userName = getIntent().getStringExtra("user_name");
+
         categoryList = getResources().getStringArray(R.array.category);
         categoryAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,categoryList);
-        categoryListView = (ListView) findViewById(R.id.categoryListView);
+        ListView categoryListView = (ListView) findViewById(R.id.categoryListView);
         categoryListView.setAdapter(categoryAdapter);
 
         categoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -73,7 +73,7 @@ public class MainApp extends AppCompatActivity
             }
         });
 
-        searchView = (SearchView) findViewById(R.id.searchView);
+        SearchView searchView = (SearchView) findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -92,7 +92,7 @@ public class MainApp extends AppCompatActivity
             }
         });
 
-        seekBar = (SeekBar) findViewById(R.id.seekBar);
+        SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
         radiusTextView = (TextView) findViewById(R.id.radiusTextView);
         radiusTextView.setText("Radius: " + seekBar.getProgress() + "m");
 
@@ -117,9 +117,9 @@ public class MainApp extends AppCompatActivity
             }
         });
 
-        resultsListView = (ListView) findViewById(R.id.resultsListView);
-        resultsList = getResources().getStringArray(R.array.results);
-        resultsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,resultsList);
+        ListView resultsListView = (ListView) findViewById(R.id.resultsListView);
+        String[] resultsList = getResources().getStringArray(R.array.results);
+        ArrayAdapter<String> resultsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, resultsList);
         resultsListView.setAdapter(resultsAdapter);
     }
 
@@ -160,6 +160,7 @@ public class MainApp extends AppCompatActivity
 
         if (item.getItemId() == R.id.nav_tools) {
             Intent loginIntent = new Intent(getApplicationContext(), AccountSettings.class);
+            loginIntent.putExtra("user_name", userName);
             startActivity(loginIntent);
         }
 
