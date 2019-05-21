@@ -24,7 +24,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class MainApp extends AppCompatActivity
@@ -101,7 +100,10 @@ public class MainApp extends AppCompatActivity
             int progressValue = 0;
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                radiusTextView.setText("Radius: " + progress + "m");
+                if(progress == 1000)
+                    radiusTextView.setText("Radius: ∞");
+                else
+                    radiusTextView.setText("Radius: " + progress + "m");
             }
 
             @Override
@@ -135,7 +137,8 @@ public class MainApp extends AppCompatActivity
                     {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            finish();
+                            finishAffinity();
+                            System.exit(0);
                         }
 
                     })
