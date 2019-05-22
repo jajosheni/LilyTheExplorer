@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AccountSettings extends AppCompatActivity {
-    public String URL = "http://10.0.2.2/api/users/";
+    public String URL;
     private EditText oldPasswordEditText;
     private EditText newPasswordEditText;
     private EditText rePasswordEditText;
@@ -31,6 +31,9 @@ public class AccountSettings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_account_settings);
+
+        URL = getResources().getString(R.string.URL);
+        URL = URL.concat("/api/users/");
 
         queue = Volley.newRequestQueue(this);
         oldPasswordEditText = (EditText) findViewById(R.id.oldPasswordEditText);

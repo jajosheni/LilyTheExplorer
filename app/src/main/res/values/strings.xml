@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Lily The Explorer</string>
-    <string name="header">Login</string>
+    <string name="URL">http://142.93.89.99</string>
+
     <string name="title_activity_lily_app">Lily the Explorer</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -10,19 +11,10 @@
     <string name="menu_tools">Account Settings</string>
     <string name="title_activity_main_app">Lily the Explorer</string>
 
-    <string-array name="category">
-        <item>Food</item>
-        <item>Clothing</item>
-        <item>Leisure</item>
-        <item>Parks</item>
-        <item>NightLife</item>
-    </string-array>
-
     <string-array name="results">
         <item>Result 1, 10m</item>
         <item>Result 2, 20m</item>
         <item>Result 3, 30m</item>
         <item>Result 4, 40m</item>
-        <item>Result 5, 50m</item>
     </string-array>
 </resources>

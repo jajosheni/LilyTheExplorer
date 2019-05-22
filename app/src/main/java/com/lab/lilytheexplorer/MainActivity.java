@@ -1,12 +1,16 @@
 package com.lab.lilytheexplorer;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -17,16 +21,35 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 public class MainActivity extends AppCompatActivity {
-    public String URL = "http://10.0.2.2/api/users/";
+    public String URL;
     private EditText usernameEditText;
     private EditText passwordEditText;
     private RequestQueue queue;
+    private int i = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
+
+        final int[] myImageList = new int[]{R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4};
+        i=1;
+        final ImageView avatarImageView = (ImageView) findViewById(R.id.avatarImageView);
+        avatarImageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    i++;
+                    i = i % 4;
+                    avatarImageView.setImageDrawable(ContextCompat.getDrawable(MainActivity.this, myImageList[i]));
+                }
+                return true;
+            }
+        });
+
+        URL = getResources().getString(R.string.URL);
+        URL = URL.concat("/api/users/");
 
         usernameEditText = (EditText) findViewById(R.id.usernameEditText);
         passwordEditText = (EditText) findViewById(R.id.passwordEditText);

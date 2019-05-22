@@ -1,12 +1,15 @@
 package com.lab.lilytheexplorer;
 
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -20,17 +23,36 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SignUp extends AppCompatActivity {
-    public String URL = "http://10.0.2.2/api/users/";
+    public String URL;
     private EditText usernameEditText;
     private EditText passwordEditText;
     private EditText rePasswordEditText;
     private RequestQueue queue;
+    private int i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_sign_up);
+
+        final int[] myImageList = new int[]{R.drawable.user1, R.drawable.user2, R.drawable.user3, R.drawable.user4};
+        i=0;
+        final ImageView avatarImageView = (ImageView) findViewById(R.id.su_avatarImageView);
+        avatarImageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP){
+                    i++;
+                    i = i % 4;
+                    avatarImageView.setImageDrawable(ContextCompat.getDrawable(SignUp.this, myImageList[i]));
+                }
+                return true;
+            }
+        });
+
+        URL = getResources().getString(R.string.URL);
+        URL = URL.concat("/api/users/");
 
         queue = Volley.newRequestQueue(this);
         usernameEditText = (EditText) findViewById(R.id.su_usernameEditText);

@@ -20,64 +20,77 @@
         android:id="@+id/cp_newPasswordEditText"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:ems="10"
         android:fontFamily="sans-serif-light"
         android:hint="New Password"
         android:inputType="textPassword"
         android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/cp_rePasswordEditText"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/oldPasswordEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/oldPasswordEditText"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <EditText
         android:id="@+id/cp_rePasswordEditText"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:ems="10"
         android:fontFamily="sans-serif-light"
         android:hint="Retype Password"
         android:inputType="textPassword"
         android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cp_newPasswordEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/cp_newPasswordEditText"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/changePasswordTextView"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginTop="80dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
         android:text="Change Password"
         android:textAllCaps="false"
         android:textColor="@color/colorPrimaryDark"
-        android:textSize="18sp"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/userNameTextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/accountSettingsTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/view" />
 
     <EditText
         android:id="@+id/oldPasswordEditText"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="96dp"
+        android:layout_marginTop="24dp"
         android:ems="10"
         android:fontFamily="sans-serif-light"
         android:hint="Old Password"
         android:inputType="textPassword"
         android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/cp_newPasswordEditText"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/changePasswordTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/userNameTextView"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <Button
         android:id="@+id/changePasswordBtn"
         android:layout_width="@dimen/button_width"
         android:layout_height="@dimen/button_height"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         android:background="@drawable/round_button_border"
         android:text="Change Password"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -106,12 +119,14 @@
         android:id="@+id/userNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="8dp"
         android:text="Username"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/oldPasswordEditText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/view"
+        app:layout_constraintVertical_chainStyle="packed" />
 
 </android.support.constraint.ConstraintLayout>

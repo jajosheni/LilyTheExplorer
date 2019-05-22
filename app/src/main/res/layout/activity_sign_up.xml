@@ -10,71 +10,74 @@
         android:id="@+id/su_rePasswordEditText"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="32dp"
         android:ems="10"
         android:fontFamily="sans-serif-light"
         android:hint="Retype Password"
         android:inputType="textPassword"
         android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/createAccountBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/su_passwordEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/su_passwordEditText"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/signUpTextView"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="80dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
         android:text="Sign Up"
         android:textAllCaps="false"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/su_avatarImageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <EditText
         android:id="@+id/su_usernameEditText"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="32dp"
         android:ems="10"
         android:fontFamily="sans-serif-light"
         android:hint="Username"
         android:inputType="textPersonName"
         android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/su_passwordEditText"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/signUpTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/su_avatarImageView"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <EditText
         android:id="@+id/su_passwordEditText"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:ems="10"
         android:fontFamily="sans-serif-light"
         android:hint="New Password"
         android:inputType="textPassword"
         android:textSize="15sp"
+        app:layout_constraintBottom_toTopOf="@+id/su_rePasswordEditText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/su_usernameEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/su_usernameEditText"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <Button
         android:id="@+id/createAccountBtn"
         android:layout_width="@dimen/button_width"
         android:layout_height="@dimen/button_height"
+        android:layout_marginTop="32dp"
         android:background="@drawable/round_button_border"
         android:text="Create Account"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
@@ -84,6 +87,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/su_rePasswordEditText" />
+        app:layout_constraintTop_toBottomOf="@+id/su_rePasswordEditText"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <ImageView
+        android:id="@+id/su_avatarImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toTopOf="@+id/su_usernameEditText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/signUpTextView"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:srcCompat="@drawable/user1" />
 
 </android.support.constraint.ConstraintLayout>

@@ -1,12 +1,21 @@
 package com.lab.lilytheexplorer;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.MenuItem;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -29,8 +38,8 @@ import java.util.Arrays;
 public class MainApp extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private String[] categoryList;
-    private ArrayAdapter<String> categoryAdapter;
+    public String URL;
+    public Location myLocation;
     private TextView radiusTextView;
     private String userName;
 
@@ -54,43 +63,48 @@ public class MainApp extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        userName = getIntent().getStringExtra("user_name");
-
-        categoryList = getResources().getStringArray(R.array.category);
-        categoryAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,categoryList);
-        ListView categoryListView = (ListView) findViewById(R.id.categoryListView);
-        categoryListView.setAdapter(categoryAdapter);
-
-        categoryListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // TODO Auto-generated method stub
-                String value=categoryAdapter.getItem(position);
-                Toast.makeText(getApplicationContext(),value,Toast.LENGTH_SHORT).show();
-                //Hide Keyboard on click
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        LocationListener locationListener = new LocationListener(){
+            public void onLocationChanged(Location location){
+                myLocation = location;
             }
-        });
+
+            public void onStatusChanged(String provider, int status, Bundle extras){
+                Log.i("**StatusChanged", provider + status);
+            }
+            public void onProviderEnabled(String provider){
+                Log.i("**Provider Enabled", provider);
+            }
+            public void onProviderDisabled(String provider){
+                Log.i("**Provider Disabled", provider);
+            }
+        };
+
+
+        if ( ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        else
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 50, locationListener);
+
+        URL = getResources().getString(R.string.URL);
+        URL = URL.concat("/api/adverts/");
+
+        userName = getIntent().getStringExtra("user_name");
 
         SearchView searchView = (SearchView) findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if(Arrays.asList(categoryList).contains(query)){
-                    categoryAdapter.getFilter().filter(query);
-                }else{
-                    Toast.makeText(MainApp.this, "No results found", Toast.LENGTH_LONG).show();
-                }
+                Toast.makeText(getApplicationContext(), query, Toast.LENGTH_SHORT).show();
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                categoryAdapter.getFilter().filter(newText);
                 return false;
             }
         });
+
 
         SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
         radiusTextView = (TextView) findViewById(R.id.radiusTextView);
@@ -122,6 +136,7 @@ public class MainApp extends AppCompatActivity
         ArrayAdapter<String> resultsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, resultsList);
         resultsListView.setAdapter(resultsAdapter);
     }
+
 
         @Override
     public void onBackPressed() {
