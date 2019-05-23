@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -24,8 +23,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -33,15 +30,35 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Arrays;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class MainApp extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    public String URL;
-    public Location myLocation;
+    private String URL;
+    private Location myLocation;
     private TextView radiusTextView;
+    private ListView resultsListView;
+    private List<String> resultsList;
+    private ArrayAdapter<String> resultsAdapter;
+    private SeekBar seekBar;
     private String userName;
+    private int radius;
+    private Boolean seekbarTouchStarted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,52 +108,109 @@ public class MainApp extends AppCompatActivity
 
         userName = getIntent().getStringExtra("user_name");
 
-        SearchView searchView = (SearchView) findViewById(R.id.searchView);
+        final SearchView searchView = (SearchView) findViewById(R.id.searchView);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
+        radiusTextView = (TextView) findViewById(R.id.radiusTextView);
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(getApplicationContext(), query, Toast.LENGTH_SHORT).show();
+                fetchResults(query, radius);
                 return false;
             }
 
             @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
+            public boolean onQueryTextChange(String newText) { return false; }
         });
 
 
-        SeekBar seekBar = (SeekBar) findViewById(R.id.seekBar);
-        radiusTextView = (TextView) findViewById(R.id.radiusTextView);
-        radiusTextView.setText("Radius: " + seekBar.getProgress() + "m");
+        radius = seekBar.getProgress();
+        radiusTextView.setText("Radius: " + radius + "m");
+
+        seekbarTouchStarted = false;
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progressValue = 0;
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(progress == 1000)
+                radius = progress;
+                if(radius == 50000)
                     radiusTextView.setText("Radius: ∞");
-                else
-                    radiusTextView.setText("Radius: " + progress + "m");
+                else{
+                    if(radius/1000 < 1)
+                        radiusTextView.setText("Radius: " + radius + "m");
+                    else
+                        radiusTextView.setText("Radius: " + radius/1000 + "km");
+                }
+
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                Toast.makeText(getApplicationContext(), "seekbar touch started", Toast.LENGTH_SHORT).show();
+                seekbarTouchStarted = true;
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Toast.makeText(getApplicationContext(), "seekbar touch stopped", Toast.LENGTH_SHORT).show();
+                if(seekbarTouchStarted) {
+                    String query = searchView.getQuery().toString();
+                    if (!query.isEmpty())
+                        fetchResults(query, radius);
+                    seekbarTouchStarted = false;
+                }
             }
         });
 
-        ListView resultsListView = (ListView) findViewById(R.id.resultsListView);
-        String[] resultsList = getResources().getStringArray(R.array.results);
-        ArrayAdapter<String> resultsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, resultsList);
+        resultsListView = (ListView) findViewById(R.id.resultsListView);
+        resultsList = new ArrayList<String>();
+        resultsList.add("Results: ");
+
+        resultsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, resultsList);
         resultsListView.setAdapter(resultsAdapter);
     }
 
+    public void fetchResults(String query, int distance){
+        if(resultsListView.getVisibility() == View.GONE)
+            resultsListView.setVisibility(View.VISIBLE);
+
+        String userLocation = myLocation.getLatitude() + ", " + myLocation.getLongitude();
+        String url = URL.concat("?userLocation=" + userLocation + "&searchQuery=" + query + "&radius=" + distance);
+
+        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+                Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                try{
+                    resultsList.clear();
+                    resultsList.add("Results: ");
+                    for(int i = 0; i < response.length() ; i++){
+                        JSONObject advert = response.getJSONObject(i);
+                        String name = advert.getString("name");
+                        String duration = advert.getString("campaignDuration").substring(0, 10).replace("-", "/");
+                        String entry = name + "\nExpiring: " + duration;
+
+                        resultsList.add(entry);
+                    }
+                    resultsListView.setAdapter(resultsAdapter);
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+            }
+        },
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error){
+                        Log.i("ERRRRORRRR", error.toString());
+                        Toast.makeText(MainApp.this, "Can't Connect. Are you offline?", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
+
+// Add JsonArrayRequest to the RequestQueue
+        requestQueue.add(jsonArrayRequest);
+    }
 
         @Override
     public void onBackPressed() {

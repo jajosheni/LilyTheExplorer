@@ -6,11 +6,14 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -53,10 +56,23 @@ public class MainActivity extends AppCompatActivity {
 
         usernameEditText = (EditText) findViewById(R.id.usernameEditText);
         passwordEditText = (EditText) findViewById(R.id.passwordEditText);
+        final Button loginBtn = (Button) findViewById(R.id.loginButton);
+        Button signUpBtn = (Button) findViewById(R.id.signUpButton);
+
+        passwordEditText.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    loginBtn.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         queue = Volley.newRequestQueue(this);
 
-        Button signUpBtn = (Button) findViewById(R.id.signUpButton);
+
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button loginBtn = (Button) findViewById(R.id.loginButton);
+
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

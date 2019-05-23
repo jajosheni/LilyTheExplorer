@@ -10,11 +10,4 @@
 
     <string name="menu_tools">Account Settings</string>
     <string name="title_activity_main_app">Lily the Explorer</string>
-
-    <string-array name="results">
-        <item>Result 1, 10m</item>
-        <item>Result 2, 20m</item>
-        <item>Result 3, 30m</item>
-        <item>Result 4, 40m</item>
-    </string-array>
 </resources>
