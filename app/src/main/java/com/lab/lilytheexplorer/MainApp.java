@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -35,7 +36,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -50,15 +50,18 @@ public class MainApp extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private String URL;
-    private Location myLocation;
+    private Double latLocation;
+    private Double lonLocation;
     private TextView radiusTextView;
     private ListView resultsListView;
     private List<String> resultsList;
+    private List<String> resultsLONGID;
     private ArrayAdapter<String> resultsAdapter;
     private SeekBar seekBar;
     private String userName;
     private int radius;
     private Boolean seekbarTouchStarted;
+    private Boolean GPS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,10 +83,25 @@ public class MainApp extends AppCompatActivity
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
+        userName = getIntent().getStringExtra("user_name");
+        try{
+            latLocation = Double.parseDouble(getIntent().getStringExtra("lat"));
+            lonLocation = Double.parseDouble(getIntent().getStringExtra("lon"));
+            GPS = true;
+        } catch (Exception e){
+            GPS = false;
+        }
+
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener(){
             public void onLocationChanged(Location location){
-                myLocation = location;
+                if(!GPS){
+                    latLocation = location.getLatitude();
+                    lonLocation = location.getLongitude();
+                }
+                else{
+
+                }
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras){
@@ -105,8 +123,6 @@ public class MainApp extends AppCompatActivity
 
         URL = getResources().getString(R.string.URL);
         URL = URL.concat("/api/adverts/");
-
-        userName = getIntent().getStringExtra("user_name");
 
         final SearchView searchView = (SearchView) findViewById(R.id.searchView);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
@@ -163,17 +179,29 @@ public class MainApp extends AppCompatActivity
 
         resultsListView = (ListView) findViewById(R.id.resultsListView);
         resultsList = new ArrayList<String>();
+        resultsLONGID = new ArrayList<String>();
+
         resultsList.add("Results: ");
+        resultsLONGID.add("Results: ");
 
         resultsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, resultsList);
         resultsListView.setAdapter(resultsAdapter);
+
+        resultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent showAdvertIntent = new Intent(getApplicationContext(), MapsActivity.class);
+                showAdvertIntent.putExtra("_id", resultsLONGID.get(position));
+                startActivity(showAdvertIntent);
+            }
+        });
     }
 
     public void fetchResults(String query, int distance){
         if(resultsListView.getVisibility() == View.GONE)
             resultsListView.setVisibility(View.VISIBLE);
 
-        String userLocation = myLocation.getLatitude() + ", " + myLocation.getLongitude();
+        String userLocation = latLocation + ", " + lonLocation;
         String url = URL.concat("?userLocation=" + userLocation + "&searchQuery=" + query + "&radius=" + distance);
 
         RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -184,14 +212,18 @@ public class MainApp extends AppCompatActivity
             public void onResponse(JSONArray response) {
                 try{
                     resultsList.clear();
+                    resultsLONGID.clear();
                     resultsList.add("Results: ");
+                    resultsLONGID.add("Results: ");
                     for(int i = 0; i < response.length() ; i++){
                         JSONObject advert = response.getJSONObject(i);
+                        String _id = advert.getString("_id");
                         String name = advert.getString("name");
                         String duration = advert.getString("campaignDuration").substring(0, 10).replace("-", "/");
                         String entry = name + "\nExpiring: " + duration;
 
                         resultsList.add(entry);
+                        resultsLONGID.add(_id);
                     }
                     resultsListView.setAdapter(resultsAdapter);
                 }catch (JSONException e){
@@ -208,7 +240,7 @@ public class MainApp extends AppCompatActivity
                 }
         );
 
-// Add JsonArrayRequest to the RequestQueue
+    // Add JsonArrayRequest to the RequestQueue
         requestQueue.add(jsonArrayRequest);
     }
 
@@ -251,6 +283,12 @@ public class MainApp extends AppCompatActivity
             Intent loginIntent = new Intent(getApplicationContext(), AccountSettings.class);
             loginIntent.putExtra("user_name", userName);
             startActivity(loginIntent);
+        }
+
+        if (item.getItemId() == R.id.gps_tools) {
+            Intent gpsIntent = new Intent(getApplicationContext(), GpsSettings.class);
+            gpsIntent.putExtra("user_name", userName);
+            startActivity(gpsIntent);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

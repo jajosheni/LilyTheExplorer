@@ -8,4 +8,10 @@
         android:icon="@drawable/ic_menu_manage"
         android:title="@string/menu_tools" />
 
+    <item
+        android:id="@+id/gps_tools"
+        android:icon="@drawable/ic_menu_send"
+        android:title="@string/gps_tools" />
+
+
 </menu>

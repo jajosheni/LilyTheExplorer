@@ -9,5 +9,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_tools">Account Settings</string>
+    <string name="gps_tools">GPS Settings</string>
     <string name="title_activity_main_app">Lily the Explorer</string>
+    <string name="title_activity_maps">Map</string>
 </resources>
