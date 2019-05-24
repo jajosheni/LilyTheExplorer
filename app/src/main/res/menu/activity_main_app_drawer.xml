@@ -13,5 +13,10 @@
         android:icon="@drawable/ic_menu_send"
         android:title="@string/gps_tools" />
 
+    <item
+        android:id="@+id/log_tools"
+        android:icon="@drawable/ic_menu_logout"
+        android:title="@string/log_tools" />
+
 
 </menu>

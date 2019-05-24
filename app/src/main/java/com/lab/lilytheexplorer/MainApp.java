@@ -291,6 +291,10 @@ public class MainApp extends AppCompatActivity
             startActivity(gpsIntent);
         }
 
+        if (item.getItemId() == R.id.log_tools) {
+            finish();
+        }
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

@@ -10,6 +10,7 @@
 
     <string name="menu_tools">Account Settings</string>
     <string name="gps_tools">GPS Settings</string>
+    <string name="log_tools">Sign Out</string>
     <string name="title_activity_main_app">Lily the Explorer</string>
     <string name="title_activity_maps">Map</string>
 </resources>
