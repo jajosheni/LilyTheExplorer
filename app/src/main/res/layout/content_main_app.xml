@@ -17,6 +17,7 @@
         android:iconifiedByDefault="false"
         android:imeOptions="actionDone"
         android:inputType="text"
+        android:paddingRight="15dp"
         android:queryHint="What are you looking for?"
         app:layout_constraintBottom_toTopOf="@+id/seekBar"
         app:layout_constraintEnd_toEndOf="parent"

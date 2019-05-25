@@ -69,12 +69,12 @@ public class MainApp extends AppCompatActivity
         if ( ContextCompat.checkSelfPermission(MainApp.this, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
             ActivityCompat.requestPermissions(MainApp.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         else
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 50, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0, locationListener);
 
         if ( ContextCompat.checkSelfPermission(MainApp.this, Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
             ActivityCompat.requestPermissions(MainApp.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         else
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 50, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0, locationListener);
     }
 
     @Override
