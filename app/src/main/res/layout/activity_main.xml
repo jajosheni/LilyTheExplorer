@@ -44,7 +44,7 @@
         android:id="@+id/loginButton"
         android:layout_width="@dimen/button_width"
         android:layout_height="@dimen/button_height"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/round_button_border"
         android:text="Sign In"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"

@@ -62,6 +62,20 @@ public class MainApp extends AppCompatActivity
     private int radius;
     private Boolean seekbarTouchStarted;
     private Boolean GPS;
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+
+    public void getLocationPermission(){
+        if ( ContextCompat.checkSelfPermission(MainApp.this, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
+            ActivityCompat.requestPermissions(MainApp.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        else
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 50, locationListener);
+
+        if ( ContextCompat.checkSelfPermission(MainApp.this, Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
+            ActivityCompat.requestPermissions(MainApp.this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        else
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 50, locationListener);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,23 +98,26 @@ public class MainApp extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         userName = getIntent().getStringExtra("user_name");
+
         try{
-            latLocation = Double.parseDouble(getIntent().getStringExtra("lat"));
-            lonLocation = Double.parseDouble(getIntent().getStringExtra("lon"));
-            GPS = true;
+            GPS = false;
+            String lat = getIntent().getStringExtra("lat");
+            String lon = getIntent().getStringExtra("lon");
+            if(!lat.isEmpty() && !lon.isEmpty()){
+                latLocation = Double.parseDouble(lat);
+                lonLocation = Double.parseDouble(lon);
+                GPS = true;
+            }
         } catch (Exception e){
             GPS = false;
         }
 
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-        LocationListener locationListener = new LocationListener(){
+        locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener(){
             public void onLocationChanged(Location location){
                 if(!GPS){
                     latLocation = location.getLatitude();
                     lonLocation = location.getLongitude();
-                }
-                else{
-
                 }
             }
 
@@ -115,11 +132,7 @@ public class MainApp extends AppCompatActivity
             }
         };
 
-
-        if ( ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION ) != PackageManager.PERMISSION_GRANTED )
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-        else
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 50, locationListener);
+        getLocationPermission();
 
         URL = getResources().getString(R.string.URL);
         URL = URL.concat("/api/adverts/");
@@ -190,9 +203,11 @@ public class MainApp extends AppCompatActivity
         resultsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent showAdvertIntent = new Intent(getApplicationContext(), MapsActivity.class);
-                showAdvertIntent.putExtra("_id", resultsLONGID.get(position));
-                startActivity(showAdvertIntent);
+                if(position!=0){
+                    Intent showAdvertIntent = new Intent(getApplicationContext(), MapsActivity.class);
+                    showAdvertIntent.putExtra("_id", resultsLONGID.get(position));
+                    startActivity(showAdvertIntent);
+                }
             }
         });
     }
@@ -201,47 +216,52 @@ public class MainApp extends AppCompatActivity
         if(resultsListView.getVisibility() == View.GONE)
             resultsListView.setVisibility(View.VISIBLE);
 
-        String userLocation = latLocation + ", " + lonLocation;
-        String url = URL.concat("?userLocation=" + userLocation + "&searchQuery=" + query + "&radius=" + distance);
+        if(latLocation==null || lonLocation==null){
+            Toast.makeText(MainApp.this, "Getting GPS Location, please try again...", Toast.LENGTH_LONG).show();
+            getLocationPermission();
+        }else{
+            String userLocation = latLocation + ", " + lonLocation;
+            String url = URL.concat("?userLocation=" + userLocation + "&searchQuery=" + query + "&radius=" + distance);
 
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+            RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
 
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
-                Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                try{
-                    resultsList.clear();
-                    resultsLONGID.clear();
-                    resultsList.add("Results: ");
-                    resultsLONGID.add("Results: ");
-                    for(int i = 0; i < response.length() ; i++){
-                        JSONObject advert = response.getJSONObject(i);
-                        String _id = advert.getString("_id");
-                        String name = advert.getString("name");
-                        String duration = advert.getString("campaignDuration").substring(0, 10).replace("-", "/");
-                        String entry = name + "\nExpiring: " + duration;
+            JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(
+                    Request.Method.GET, url, null, new Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    try{
+                        resultsList.clear();
+                        resultsLONGID.clear();
+                        resultsList.add("Results: ");
+                        resultsLONGID.add("Results: ");
+                        for(int i = 0; i < response.length() ; i++){
+                            JSONObject advert = response.getJSONObject(i);
+                            String _id = advert.getString("_id");
+                            String name = advert.getString("name");
+                            String duration = advert.getString("campaignDuration").substring(0, 10).replace("-", "/");
+                            String entry = name + "\nExpiring: " + duration;
 
-                        resultsList.add(entry);
-                        resultsLONGID.add(_id);
-                    }
-                    resultsListView.setAdapter(resultsAdapter);
-                }catch (JSONException e){
-                    e.printStackTrace();
-                }
-            }
-        },
-                new Response.ErrorListener(){
-                    @Override
-                    public void onErrorResponse(VolleyError error){
-                        Log.i("ERRRRORRRR", error.toString());
-                        Toast.makeText(MainApp.this, "Can't Connect. Are you offline?", Toast.LENGTH_SHORT).show();
+                            resultsList.add(entry);
+                            resultsLONGID.add(_id);
+                        }
+                        resultsListView.setAdapter(resultsAdapter);
+                    }catch (JSONException e){
+                        e.printStackTrace();
                     }
                 }
-        );
+            },
+                    new Response.ErrorListener(){
+                        @Override
+                        public void onErrorResponse(VolleyError error){
+                            Log.i("ERRRRORRRR", error.toString());
+                            Toast.makeText(MainApp.this, "Can't Connect. Are you offline?", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+            );
 
-    // Add JsonArrayRequest to the RequestQueue
-        requestQueue.add(jsonArrayRequest);
+            // Add JsonArrayRequest to the RequestQueue
+            requestQueue.add(jsonArrayRequest);
+        }
     }
 
         @Override
