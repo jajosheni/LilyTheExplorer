@@ -1,7 +1,10 @@
 package com.lab.lilytheexplorer;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +23,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -53,7 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
     }
 
-    public void getAdvert(String _id){
+    public void getAdvert(String _id) {
         String url = URL.concat(_id);
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest
@@ -61,7 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     @Override
                     public void onResponse(JSONObject response) {
-                        try{
+                        try {
                             JSONArray coordinates = (response.getJSONObject("location")
                                     .getJSONArray("coordinates"));
                             Double lat = Double.parseDouble(coordinates.get(0).toString());
@@ -71,13 +75,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             String campaignContent = response.getString("campaignContent");
                             //String expiring = response.getString("date");
 
+
+                            if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                                    Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(),
+                                    Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                return;
+                            }
+
+                            mMap.setMyLocationEnabled(true);
+
                             // Add a marker in Location and move the camera
                             LatLng location = new LatLng(lat, lon);
                             mMap.addMarker(new MarkerOptions()
                                     .position(location)
                                     .title(name)
                                     .snippet(campaignContent))
-                                    .setIcon(BitmapDescriptorFactory.defaultMarker(146.0f));
+                                    .setIcon(BitmapDescriptorFactory.defaultMarker());
 
                             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                                 @Override
