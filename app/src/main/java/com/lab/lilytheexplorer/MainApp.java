@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -50,7 +52,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 
 public class MainApp extends AppCompatActivity
@@ -98,7 +99,7 @@ public class MainApp extends AppCompatActivity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.channel_name);
             String description = getString(R.string.channel_description);
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            int importance = NotificationManager.IMPORTANCE_LOW;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
 
@@ -262,8 +263,6 @@ public class MainApp extends AppCompatActivity
                             String name = advert.getString("name");
                             String coordinates = (advert.getJSONObject("location").getJSONArray("coordinates")).toString();
                             String entry = name + ":" + coordinates;
-                            if(i==0)
-                                newList.add("My Location:["+latLocation+","+lonLocation+"]");
                             newList.add(entry);
                         }
 
@@ -272,8 +271,8 @@ public class MainApp extends AppCompatActivity
                             for (String item : newList) oldList.add(item);
                             firstRun = false;
                         }else{
-                            if(!oldList.equals(newList)){
-                                showNotification(newList, new Random().nextInt());
+                            if(!oldList.equals(newList) && !oldList.contains(newList)){
+                                showNotification(newList);
                                 oldList.clear();
                                 for (String item : newList) oldList.add(item);
                             }
@@ -293,15 +292,17 @@ public class MainApp extends AppCompatActivity
         }
     }
 
-    private void showNotification(ArrayList<String> locations, int ID) {
-        Toast.makeText(getApplicationContext(), "LOCATIONS: " + locations.size(), Toast.LENGTH_LONG).show();
+
+    private void showNotification(ArrayList<String> locations) {
         Intent intent = new Intent(this, NotificationMaps.class);
         intent.putExtra("locations", locations);
+        intent.putExtra("myCoordinates", latLocation + "," + lonLocation);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setSmallIcon(R.drawable.icon)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.round_icon))
                 .setContentTitle("New campaigns nearby!")
                 .setContentText("Tap this notification to see more!")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -309,8 +310,9 @@ public class MainApp extends AppCompatActivity
                 .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.notify(ID, builder.build());
+        notificationManager.notify(1996, builder.build());
     }
+
 
     private void fetchResults(String query, int distance){
         if(resultsListView.getVisibility() == View.GONE)

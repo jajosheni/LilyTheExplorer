@@ -31,6 +31,7 @@ public class NotificationMaps extends FragmentActivity implements OnMapReadyCall
 
     private GoogleMap mMap;
     private ArrayList<String> locations;
+    private LatLng myLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +43,8 @@ public class NotificationMaps extends FragmentActivity implements OnMapReadyCall
         mapFragment.getMapAsync(this);
 
         locations = getIntent().getStringArrayListExtra("locations");
-        //Toast.makeText(getApplicationContext(), locations.get(0), Toast.LENGTH_LONG).show();
+        String[] coords = getIntent().getStringExtra("myCoordinates").split(",");
+        myLocation = new LatLng(Double.parseDouble(coords[0]), Double.parseDouble(coords[1]));
     }
 
     @Override
@@ -61,24 +63,22 @@ public class NotificationMaps extends FragmentActivity implements OnMapReadyCall
             Double lon = Double.parseDouble(coords[1]);
 
             LatLng item = new LatLng(lat, lon);
-
-            if (i == 0) { // First location is self location
-                mMap.addCircle(new CircleOptions()
-                        .center(item)
-                        .radius(500) //m
-                        .strokeColor(Color.argb(5, 255, 255, 0))
-                        .fillColor(Color.argb(20, 0, 136, 255)));
-
-                if (ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                        ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                mMap.setMyLocationEnabled(true);
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(item, 15.0f)); // zoom Level
-            }else
-                mMap.addMarker(new MarkerOptions().position(item).title(name));
+            mMap.addMarker(new MarkerOptions().position(item).title(name));
         }
+
+        mMap.addCircle(new CircleOptions()
+                .center(myLocation)
+                .radius(500) //m
+                .strokeColor(Color.argb(5, 255, 255, 0))
+                .fillColor(Color.argb(20, 0, 136, 255)));
+
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 15.0f)); // zoom Level
     }
         @Override
     public void onBackPressed() {
